@@ -6,17 +6,18 @@ export const bio = {
   email: 'ayushme1234@gmail.com',
   phone: '+91 7070015321',
   location: 'Kolkata, India',
-  // Drop your PDF at /public/resume.pdf and remove this line, OR set to a Drive/Notion link
-  resumeUrl: '/resume.pdf',
-  // The repo this site lives in
-  repoUrl: 'https://github.com/ayushme1234/Ayush-next-portfolio',
+  status: 'Available for full-time · 2026',
+  current: 'Salesforce Domain Intern · Cognizant',
 
-  // → CHANGE THIS to your GitHub repo URL after pushing the code
-  portfolioRepo: 'https://github.com/ayushme1234/portfolio-v2',
-
-  // → Resume: drop your PDF at /public/resume.pdf and the button will work
-  // (or change this to a Google Drive / Dropbox / external link)
-  resumeUrl: '/resume.pdf',
+  education: {
+    degree: 'B.Tech in Electronics and Communication Engineering',
+    school: 'Netaji Subhash Engineering College, West Bengal',
+    years: '2022 – 2026',
+    cgpa: '7.5 / 10',
+    classXII: '90.17%',
+    classX: '94%',
+    secondarySchool: 'DAV Public School, Koyla Nagar, Dhanbad',
+  },
 
   socials: {
     github: 'https://github.com/ayushme1234',
@@ -24,12 +25,11 @@ export const bio = {
     trailhead:
       'https://www.salesforce.com/trailblazer/s34qhsd0jafihg51r5',
   },
-  status: 'Available for full-time · 2026',
-  current: 'Salesforce Domain Intern · Cognizant',
+
   stats: [
     { value: '09+', label: 'Projects shipped' },
     { value: '200+', label: 'DSA problems' },
-    { value: '15+', label: 'LWC modules' },
+    { value: '7.5', label: 'CGPA / 10' },
     { value: '04+', label: 'Years coding' },
   ],
 }

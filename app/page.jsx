@@ -6,6 +6,7 @@ import Services from '@/components/Services'
 import Skills from '@/components/Skills'
 import ProjectsStack from '@/components/ProjectsStack'
 import Experience from '@/components/Experience'
+import Certifications from '@/components/Certifications'
 import Recognition from '@/components/Recognition'
 import About from '@/components/About'
 import Contact from '@/components/Contact'
@@ -35,6 +36,7 @@ export default function Home() {
         <ProjectsStack />
         <GlowDivider label="The journey" />
         <Experience />
+        <Certifications />
         <Recognition />
         <GlowDivider label="More about me" />
         <About />
