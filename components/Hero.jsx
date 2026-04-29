@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { ArrowRight, Sparkles, Play, MessageSquare, ArrowDown } from 'lucide-react'
 import { useUI } from '@/lib/store'
 import MagneticButton from './MagneticButton'
+import FloatingOrbs from './FloatingOrbs'
 
 export default function Hero() {
   const setChatOpen = useUI((s) => s.setChatOpen)
@@ -39,6 +40,9 @@ export default function Hero() {
       id="top"
       className="relative flex min-h-[100svh] w-full flex-col justify-between overflow-hidden px-6 pt-28 pb-12 md:px-10 md:pb-16"
     >
+      {/* Decorative motion graphics */}
+      <FloatingOrbs />
+
       {/* Top meta — corner labels, editorial */}
       <div className="container-x flex w-full items-start justify-between font-mono text-[10px] uppercase tracking-[0.3em] text-ink-500 md:text-[11px]">
         <div className="flex flex-col gap-1">
@@ -79,7 +83,7 @@ export default function Hero() {
           transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           className="font-display text-center font-bold leading-[0.82] tracking-[-0.05em] text-ink-50"
           style={{
-            fontSize: 'clamp(5.5rem, 22vw, 18rem)',
+            fontSize: 'clamp(3.5rem, 14vw, 9rem)',
             fontWeight: 900,
           }}
         >

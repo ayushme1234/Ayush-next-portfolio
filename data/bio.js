@@ -6,6 +6,10 @@ export const bio = {
   email: 'ayushme1234@gmail.com',
   phone: '+91 7070015321',
   location: 'Kolkata, India',
+  // Drop your PDF at /public/resume.pdf and remove this line, OR set to a Drive/Notion link
+  resumeUrl: '/resume.pdf',
+  // The repo this site lives in
+  repoUrl: 'https://github.com/ayushme1234/Ayush-next-portfolio',
 
   // → CHANGE THIS to your GitHub repo URL after pushing the code
   portfolioRepo: 'https://github.com/ayushme1234/portfolio-v2',

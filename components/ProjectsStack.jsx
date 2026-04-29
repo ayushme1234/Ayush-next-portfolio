@@ -1,23 +1,16 @@
 'use client'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { ArrowUpRight, Github } from 'lucide-react'
+import { ArrowUpRight, Github, Image as ImageIcon } from 'lucide-react'
 import { projects } from '@/data/projects'
 import SplitTextReveal from './SplitTextReveal'
 
-/**
- * ProjectsStack — playing-card scroll effect.
- * Each project card pins at a slightly offset top position. As the next card
- * scrolls up over it, the previous card scales down + drops slightly,
- * creating a stacked deck-of-cards visual.
- */
 export default function ProjectsStack() {
   return (
     <section
       id="work"
       className="relative bg-[#08080a] px-6 pb-32 md:px-10"
     >
-      {/* Header */}
       <div className="container-x pt-24 md:pt-32">
         <div className="flex items-end justify-between gap-6">
           <div>
@@ -32,7 +25,6 @@ export default function ProjectsStack() {
         </div>
       </div>
 
-      {/* Card stack */}
       <div className="container-x relative mt-16">
         {projects.map((p, i) => (
           <ProjectCard key={p.id} p={p} i={i} total={projects.length} />
@@ -44,39 +36,25 @@ export default function ProjectsStack() {
 
 function ProjectCard({ p, i, total }) {
   const ref = useRef(null)
+  const [imgFailed, setImgFailed] = useState(false)
+  const [imgLoaded, setImgLoaded] = useState(false)
 
-  // Track each card's scroll progress through its own scroll range
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start start', 'end start'],
   })
 
-  // Scale-down the card as the next one covers it
-  // Cards earlier in the deck end up smaller (deeper in the stack)
   const targetScale = 1 - (total - i) * 0.025
   const scale = useTransform(scrollYProgress, [0, 1], [1, targetScale])
-
-  // Slight Y drift down as it gets covered (parallax under the next card)
   const y = useTransform(scrollYProgress, [0, 1], [0, 30])
-
-  // Stacking top offset — each card pins slightly lower so the stack is visible
   const topOffset = 90 + i * 14
-
-  // Accent color cycles through the brand palette
-  const accents = ['#a78bfa', '#ec4899', '#22d3ee', '#fb923c', '#f43f5e']
-  const accent = accents[i % accents.length]
+  const accent = p.accent || '#a78bfa'
 
   return (
     <div
       ref={ref}
       className="relative"
-      style={{
-        // Each card needs its own scroll distance — that's what creates the
-        // "deal" effect as you scroll past it.
-        height: '90vh',
-        // Stack ordering — earlier cards lower, later cards on top
-        zIndex: i + 1,
-      }}
+      style={{ height: '90vh', zIndex: i + 1 }}
     >
       <div
         className="sticky w-full"
@@ -84,35 +62,81 @@ function ProjectCard({ p, i, total }) {
       >
         <motion.article
           style={{ scale, y }}
-          className="card-deal mx-auto w-full max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-[#0d0d10] shadow-2xl"
+          className="mx-auto w-full max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-[#0d0d10] shadow-2xl"
           initial={{ opacity: 0, y: 60, rotate: -2 }}
           whileInView={{ opacity: 1, y: 0, rotate: 0 }}
-          transition={{
-            duration: 0.9,
-            ease: [0.16, 1, 0.3, 1],
-            delay: 0.05,
-          }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
           viewport={{ once: true, margin: '-15%' }}
         >
           <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr]">
-            {/* Image */}
-            <div className="relative aspect-[16/10] overflow-hidden bg-[#15151a] md:aspect-auto">
-              <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-white/[0.04] to-white/[0.01]" />
-              <img
-                src={p.image}
-                alt={`${p.title} preview`}
-                loading="lazy"
-                decoding="async"
-                onError={(e) => (e.currentTarget.style.opacity = '0')}
-                className="absolute inset-0 h-full w-full object-cover"
-              />
-              <span className="absolute left-5 top-5 rounded-full bg-black/60 px-3 py-1 font-mono text-[10px] uppercase tracking-wide text-ink-200 backdrop-blur-md">
+            {/* Image with fallback */}
+            <div
+              className="relative aspect-[16/10] overflow-hidden md:aspect-auto"
+              style={{
+                background: imgFailed
+                  ? `linear-gradient(135deg, ${accent}30 0%, ${accent}10 50%, #0d0d10 100%)`
+                  : '#15151a',
+              }}
+            >
+              {/* Skeleton — shown while loading */}
+              {!imgLoaded && !imgFailed && (
+                <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-white/[0.04] to-white/[0.01]" />
+              )}
+
+              {/* Real image */}
+              {!imgFailed && (
+                <img
+                  src={p.image}
+                  alt={`${p.title} preview`}
+                  loading="lazy"
+                  decoding="async"
+                  onLoad={() => setImgLoaded(true)}
+                  onError={() => setImgFailed(true)}
+                  className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
+                    imgLoaded ? 'opacity-100' : 'opacity-0'
+                  }`}
+                />
+              )}
+
+              {/* Fallback placeholder when image fails */}
+              {imgFailed && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
+                  <div
+                    className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl"
+                    style={{
+                      background: `${accent}25`,
+                      border: `1px solid ${accent}50`,
+                    }}
+                  >
+                    <ImageIcon size={22} style={{ color: accent }} />
+                  </div>
+                  <div className="font-display text-[20px] font-semibold tracking-tight text-ink-100 md:text-[24px]">
+                    {p.title}
+                  </div>
+                  <div className="mt-1 font-mono text-[10px] uppercase tracking-wider text-ink-500">
+                    {p.subtitle}
+                  </div>
+                  {p.live && (
+                    <a
+                      href={p.live}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] text-ink-200 transition-colors hover:bg-white/10"
+                    >
+                      View live
+                      <ArrowUpRight size={11} />
+                    </a>
+                  )}
+                </div>
+              )}
+
+              <span className="absolute left-5 top-5 z-10 rounded-full bg-black/60 px-3 py-1 font-mono text-[10px] uppercase tracking-wide text-ink-200 backdrop-blur-md">
                 {p.number} / 09
               </span>
               <span
-                className="absolute right-5 top-5 rounded-full px-3 py-1 font-mono text-[10px] uppercase tracking-wide text-white backdrop-blur-md"
+                className="absolute right-5 top-5 z-10 rounded-full px-3 py-1 font-mono text-[10px] uppercase tracking-wide text-white backdrop-blur-md"
                 style={{
-                  background: `${accent}26`,
+                  background: `${accent}30`,
                   border: `1px solid ${accent}66`,
                 }}
               >
@@ -135,7 +159,6 @@ function ProjectCard({ p, i, total }) {
                 <p className="mt-3 text-[14px] leading-relaxed text-ink-400 md:text-[15px]">
                   {p.summary}
                 </p>
-
                 <div className="mt-4 flex flex-wrap gap-1.5">
                   {p.tags.slice(0, 5).map((t) => (
                     <span
@@ -175,7 +198,6 @@ function ProjectCard({ p, i, total }) {
             </div>
           </div>
 
-          {/* Accent edge stripe — feels like a card edge */}
           <div
             className="absolute inset-x-0 bottom-0 h-[3px] opacity-70"
             style={{

@@ -15,6 +15,7 @@ import VoicePlayer from '@/components/VoicePlayer'
 import SmoothScroll from '@/components/SmoothScroll'
 import AuroraBlobs from '@/components/AuroraBlobs'
 import ScrollProgress from '@/components/ScrollProgress'
+import GlowDivider from '@/components/GlowDivider'
 
 export default function Home() {
   return (
@@ -27,11 +28,15 @@ export default function Home() {
         <Hero />
         <Marquee />
         <Now />
+        <GlowDivider label="What I do" />
         <Services />
         <Skills />
+        <GlowDivider label="The work" />
         <ProjectsStack />
+        <GlowDivider label="The journey" />
         <Experience />
         <Recognition />
+        <GlowDivider label="More about me" />
         <About />
         <Contact />
       </main>
