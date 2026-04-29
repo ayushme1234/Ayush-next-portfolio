@@ -1,17 +1,12 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
-import {
-  ArrowRight,
-  Sparkles,
-  Play,
-  ArrowDown,
-  Volume2,
-  VolumeX,
-} from 'lucide-react'
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
+import { ArrowRight, Sparkles, Play, Volume2, VolumeX } from 'lucide-react'
 import { useUI } from '@/lib/store'
 import MagneticButton from './MagneticButton'
 import FloatingOrbs from './FloatingOrbs'
+import Typewriter from './Typewriter'
+import ScrollCue from './ScrollCue'
 
 export default function Hero() {
   const setChatOpen = useUI((s) => s.setChatOpen)
@@ -19,7 +14,7 @@ export default function Hero() {
 
   const heroRef = useRef(null)
   const layerRef = useRef(null)
-  const videoRef = useRef(null)
+  const audioRef = useRef(null)
 
   const [muted, setMuted] = useState(true)
 
@@ -27,156 +22,179 @@ export default function Hero() {
     target: heroRef,
     offset: ['start start', 'end start'],
   })
-  const titleY = useTransform(scrollYProgress, [0, 1], [0, -200])
-  const titleScale = useTransform(scrollYProgress, [0, 0.5], [1, 1.08])
-  const titleOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
-  const subY = useTransform(scrollYProgress, [0, 1], [0, -350])
-  const videoScale = useTransform(scrollYProgress, [0, 1], [1.05, 1.15])
 
-  // Mouse parallax
+  // Title: scale up + fade out as you scroll
+  const titleY = useTransform(scrollYProgress, [0, 1], [0, -150])
+  const titleScale = useTransform(scrollYProgress, [0, 0.5], [1, 1.05])
+  const titleOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
+
+  // Background image: slow zoom + dim as you scroll
+  const bgScale = useTransform(scrollYProgress, [0, 1], [1.05, 1.18])
+  const bgY = useTransform(scrollYProgress, [0, 1], [0, 80])
+  const bgBrightness = useTransform(scrollYProgress, [0, 1], [1, 0.4])
+
+  const subY = useTransform(scrollYProgress, [0, 1], [0, -250])
+
+  // Mouse parallax for image (smooth via spring)
+  const mxRaw = useSpring(0, { damping: 30, stiffness: 80 })
+  const myRaw = useSpring(0, { damping: 30, stiffness: 80 })
+  const bgX = useTransform(mxRaw, [-1, 1], [25, -25])
+  const bgYMouse = useTransform(myRaw, [-1, 1], [15, -15])
+
   useEffect(() => {
     const onMove = (e) => {
-      if (!layerRef.current) return
       const x = (e.clientX / window.innerWidth - 0.5) * 2
       const y = (e.clientY / window.innerHeight - 0.5) * 2
-      layerRef.current.style.transform = `translate3d(${x * -10}px, ${y * -8}px, 0)`
+      mxRaw.set(x)
+      myRaw.set(y)
+      if (layerRef.current) {
+        layerRef.current.style.transform = `translate3d(${x * -8}px, ${y * -6}px, 0)`
+      }
     }
     window.addEventListener('mousemove', onMove, { passive: true })
     return () => window.removeEventListener('mousemove', onMove)
-  }, [])
+  }, [mxRaw, myRaw])
 
-  // Try to autoplay on mount; some browsers block until user interaction
-  useEffect(() => {
-    const v = videoRef.current
-    if (!v) return
-    v.play().catch(() => {
-      /* autoplay blocked — will play on first interaction */
-    })
-  }, [])
-
-  const toggleMute = () => {
-    if (!videoRef.current) return
+  // Optional video audio (kept available — plays only after user clicks unmute)
+  const toggleSound = () => {
+    if (!audioRef.current) return
     const next = !muted
-    videoRef.current.muted = next
+    audioRef.current.muted = next
     setMuted(next)
-    if (!next) {
-      videoRef.current.play().catch(() => {})
-    }
+    if (!next) audioRef.current.play().catch(() => {})
   }
 
   return (
     <section
       ref={heroRef}
       id="top"
-      className="relative isolate flex min-h-[100svh] w-full flex-col justify-between overflow-hidden bg-[#050507] px-6 pt-28 pb-12 md:px-10 md:pb-16"
+      className="relative isolate flex min-h-[100svh] w-full flex-col justify-between overflow-hidden bg-[#050507] px-6 pt-24 pb-12 md:px-10 md:pb-16"
     >
-      {/* ───── BACKGROUND VIDEO LAYER (z-index: 0, behind everything in this section) ───── */}
+      {/* ───── BACKGROUND IMAGE LAYER ───── */}
       <motion.div
-        style={{ scale: videoScale }}
-        className="absolute inset-0 z-0 overflow-hidden will-change-transform"
+        style={{
+          scale: bgScale,
+          y: bgY,
+          x: bgX,
+          filter: useTransform(bgBrightness, (b) => `brightness(${b})`),
+        }}
+        className="absolute inset-0 z-0 will-change-transform"
         aria-hidden="true"
       >
-        <video
-          ref={videoRef}
-          src="/videos/hero-bg.mp4"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          poster=""
-          className="h-full w-full object-cover"
-        />
-        {/* Lighter overlay — video stays visibly playing through it */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'linear-gradient(180deg, rgba(5,5,7,0.35) 0%, rgba(5,5,7,0.55) 60%, rgba(5,5,7,0.75) 100%)',
-          }}
-        />
-        {/* Subtle vignette so corners darken without hiding the video center */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(ellipse 100% 80% at 50% 50%, transparent 30%, rgba(5,5,7,0.5) 100%)',
-          }}
-        />
+        <motion.div style={{ y: bgYMouse }} className="absolute inset-0">
+          <img
+            src="/images/hero-bg.png"
+            alt=""
+            className="h-full w-full object-cover"
+            style={{
+              objectPosition: 'center 30%',
+              filter: 'saturate(1.1) contrast(1.05)',
+            }}
+          />
+        </motion.div>
       </motion.div>
 
-      {/* ───── CONTENT LAYER (z-index: 10, on top of video) ───── */}
-      <div className="relative z-10 flex w-full flex-col">
-        {/* Floating decorative orbs */}
-        <FloatingOrbs />
+      {/* ───── DIM OVERLAYS ───── */}
+      {/* Soft top fade so the nav has contrast */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-48"
+        style={{
+          background:
+            'linear-gradient(180deg, rgba(5,5,7,0.85) 0%, rgba(5,5,7,0.4) 60%, transparent 100%)',
+        }}
+        aria-hidden="true"
+      />
+      {/* Stronger bottom fade for text + CTAs */}
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-2/3"
+        style={{
+          background:
+            'linear-gradient(180deg, transparent 0%, rgba(5,5,7,0.5) 40%, rgba(5,5,7,0.92) 100%)',
+        }}
+        aria-hidden="true"
+      />
 
-        {/* Top meta — corner labels */}
-        <div className="container-x flex w-full items-start justify-between font-mono text-[10px] uppercase tracking-[0.3em] text-ink-200 md:text-[11px]">
-          <div className="flex flex-col gap-1">
-            <span>Portfolio · 2026</span>
-            <span className="text-ink-400">Vol. 01</span>
-          </div>
-          <div className="hidden flex-col items-end gap-1 md:flex">
-            <span className="flex items-center gap-2">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
-              </span>
-              Available · 2026
+      {/* ───── DECORATIVE ORBS ───── */}
+      <div className="relative z-[2]">
+        <FloatingOrbs />
+      </div>
+
+      {/* ───── TOP META ───── */}
+      <div className="container-x relative z-10 flex w-full items-start justify-between font-mono text-[10px] uppercase tracking-[0.3em] text-white/80 md:text-[11px]">
+        <div className="flex flex-col gap-1">
+          <span>Portfolio · 2026</span>
+          <span className="text-white/50">Vol. 01</span>
+        </div>
+        <div className="hidden flex-col items-end gap-1 md:flex">
+          <span className="flex items-center gap-2">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
             </span>
-            <span className="text-ink-400">Kolkata, IN</span>
-          </div>
+            Available · 2026
+          </span>
+          <span className="text-white/50">Kolkata, IN</span>
         </div>
       </div>
 
-      {/* MAIN DISPLAY — also above video */}
+      {/* ───── MAIN DISPLAY ───── */}
       <motion.div
         style={{ y: titleY, scale: titleScale, opacity: titleOpacity }}
         ref={layerRef}
         className="relative z-10 flex flex-1 flex-col items-center justify-center will-change-transform"
       >
+        {/* Eyebrow */}
         <motion.span
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-2 block text-center font-mono text-[10px] uppercase tracking-[0.4em] text-ink-200 md:text-[12px]"
+          className="mb-3 block text-center font-mono text-[10px] uppercase tracking-[0.4em] text-white/80 md:text-[12px]"
           style={{ textShadow: '0 2px 12px rgba(0,0,0,0.8)' }}
         >
           Full-Stack AI Engineer
         </motion.span>
 
+        {/* TYPEWRITER NAME — much smaller now */}
         <motion.h1
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="font-display text-center font-bold leading-[0.82] tracking-[-0.05em] text-ink-50"
+          transition={{ duration: 1, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+          className="font-display text-center font-bold leading-[0.95] tracking-[-0.04em] text-white"
           style={{
-            fontSize: 'clamp(5.5rem, 22vw, 18rem)',
-            fontWeight: 900,
-            textShadow: '0 4px 60px rgba(0,0,0,0.7), 0 2px 20px rgba(0,0,0,0.5)',
+            fontSize: 'clamp(3rem, 9vw, 7rem)',
+            fontWeight: 800,
+            textShadow: '0 4px 40px rgba(0,0,0,0.8), 0 2px 16px rgba(0,0,0,0.6)',
+            minHeight: '1.1em',
           }}
         >
-          Ayush.
+          <Typewriter
+            text="Ayush."
+            speed={160}
+            startDelay={400}
+            cursorClassName="text-purple-300"
+          />
         </motion.h1>
 
+        {/* Tagline */}
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-6 max-w-md text-center text-[14px] leading-relaxed text-ink-100 md:max-w-lg md:text-[16px]"
-          style={{ textShadow: '0 2px 20px rgba(0,0,0,0.8)' }}
+          transition={{ duration: 0.9, delay: 1.6, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-5 max-w-md text-center text-[14px] leading-relaxed text-white/85 md:max-w-lg md:text-[16px]"
+          style={{ textShadow: '0 2px 16px rgba(0,0,0,0.85)' }}
         >
           Building AI products and Salesforce platforms.
           <br className="hidden md:block" />
           B.Tech ECE 2026 · Currently shipping at{' '}
-          <span className="text-ink-50">Cognizant</span>.
+          <span className="text-white">Cognizant</span>.
         </motion.p>
 
+        {/* CTAs */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-8 flex flex-wrap items-center justify-center gap-3"
+          transition={{ duration: 0.9, delay: 1.8, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-7 flex flex-wrap items-center justify-center gap-3"
         >
           <MagneticButton as="a" href="#contact" className="btn-primary">
             Get in touch
@@ -187,68 +205,66 @@ export default function Hero() {
           </MagneticButton>
         </motion.div>
 
+        {/* Feature pills */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.85, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-4 flex flex-wrap items-center justify-center gap-2.5"
+          transition={{ duration: 0.9, delay: 1.95, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-3 flex flex-wrap items-center justify-center gap-2.5"
         >
           <button
             onClick={() => setChatOpen(true)}
-            className="group flex items-center gap-2.5 rounded-full border border-white/15 bg-black/40 px-3.5 py-1.5 backdrop-blur-md transition-colors hover:border-white/30 hover:bg-black/60"
+            className="group flex items-center gap-2.5 rounded-full border border-white/20 bg-black/50 px-3.5 py-1.5 backdrop-blur-md transition-colors hover:border-white/40 hover:bg-black/70"
           >
             <span className="flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-br from-purple-400 to-pink-500">
               <Sparkles size={9} className="text-ink-950" />
             </span>
-            <span className="text-[12px] font-medium text-ink-50">Ask AI Ayush</span>
+            <span className="text-[12px] font-medium text-white">Ask AI Ayush</span>
           </button>
           <button
             onClick={() => setVoiceOpen(true)}
-            className="group flex items-center gap-2.5 rounded-full border border-white/15 bg-black/40 px-3.5 py-1.5 backdrop-blur-md transition-colors hover:border-white/30 hover:bg-black/60"
+            className="group flex items-center gap-2.5 rounded-full border border-white/20 bg-black/50 px-3.5 py-1.5 backdrop-blur-md transition-colors hover:border-white/40 hover:bg-black/70"
           >
             <span className="flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-purple-400">
               <Play size={8} className="ml-0.5 text-white" fill="currentColor" />
             </span>
-            <span className="text-[12px] font-medium text-ink-50">Play my story</span>
+            <span className="text-[12px] font-medium text-white">Play my story</span>
           </button>
         </motion.div>
       </motion.div>
 
-      {/* Bottom bar — also above video */}
+      {/* ───── BOTTOM META ───── */}
       <motion.div
         style={{ y: subY }}
-        className="container-x relative z-10 flex w-full items-end justify-between font-mono text-[10px] uppercase tracking-[0.3em] text-ink-200 md:text-[11px]"
+        className="container-x relative z-10 flex w-full items-end justify-between font-mono text-[10px] uppercase tracking-[0.3em] text-white/70 md:text-[11px]"
       >
         <div className="flex flex-col gap-1">
-          <span className="text-ink-400">Designed & built by</span>
+          <span className="text-white/50">Designed & built by</span>
           <span>Ayush</span>
         </div>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
-          className="hidden flex-col items-end gap-2 md:flex"
-        >
-          <span>Scroll</span>
-          <ArrowDown size={14} className="animate-bounce text-ink-100" />
-        </motion.div>
       </motion.div>
 
-      {/* Sound toggle — fixed corner button (above everything) */}
+      {/* Animated scroll indicator — centered bottom */}
+      <ScrollCue />
+
+      {/* Hidden audio source (sound option) */}
+      <audio ref={audioRef} src="/videos/hero-bg.mp4" loop preload="none" muted />
+
+      {/* Sound toggle */}
       <motion.button
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.4, duration: 0.6 }}
-        onClick={toggleMute}
+        transition={{ delay: 2, duration: 0.6 }}
+        onClick={toggleSound}
         aria-label={muted ? 'Unmute background audio' : 'Mute background audio'}
         className="fixed bottom-6 left-6 z-30 flex items-center gap-2 rounded-full border border-white/15 bg-black/60 px-3 py-2 backdrop-blur-md transition-colors hover:border-white/30 hover:bg-black/80"
       >
         {muted ? (
-          <VolumeX size={14} className="text-ink-200" />
+          <VolumeX size={14} className="text-white/80" />
         ) : (
           <Volume2 size={14} className="text-emerald-400" />
         )}
-        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-100">
+        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/90">
           {muted ? 'Sound off' : 'Sound on'}
         </span>
       </motion.button>

@@ -17,6 +17,7 @@ import SmoothScroll from '@/components/SmoothScroll'
 import AuroraBlobs from '@/components/AuroraBlobs'
 import ScrollProgress from '@/components/ScrollProgress'
 import GlowDivider from '@/components/GlowDivider'
+import DimOnScroll from '@/components/DimOnScroll'
 
 export default function Home() {
   return (
@@ -26,21 +27,32 @@ export default function Home() {
       <ScrollProgress />
       <Navbar />
       <main>
+        {/* Hero handles its own scroll-driven motion */}
         <Hero />
-        <Marquee />
-        <Now />
+
+        <DimOnScroll><Marquee /></DimOnScroll>
+        <DimOnScroll><Now /></DimOnScroll>
+
         <GlowDivider label="What I do" />
-        <Services />
-        <Skills />
+
+        <DimOnScroll><Services /></DimOnScroll>
+        <DimOnScroll><Skills /></DimOnScroll>
+
         <GlowDivider label="The work" />
+
+        {/* ProjectsStack uses sticky internally — don't wrap in transformed parent */}
         <ProjectsStack />
+
         <GlowDivider label="The journey" />
-        <Experience />
-        <Certifications />
-        <Recognition />
+
+        <DimOnScroll><Experience /></DimOnScroll>
+        <DimOnScroll><Certifications /></DimOnScroll>
+        <DimOnScroll><Recognition /></DimOnScroll>
+
         <GlowDivider label="More about me" />
-        <About />
-        <Contact />
+
+        <DimOnScroll><About /></DimOnScroll>
+        <DimOnScroll><Contact /></DimOnScroll>
       </main>
       <Footer />
       <ChatPanel />
