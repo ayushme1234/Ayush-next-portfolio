@@ -1,5 +1,6 @@
 'use client'
-import { motion } from 'framer-motion'
+import { useRef } from 'react'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import {
   Sparkles,
   Cloud,
@@ -98,7 +99,7 @@ const groups = [
 
 export default function Skills() {
   return (
-    <section className="relative px-6 py-20 md:px-10 md:py-24">
+    <section className="relative px-6 py-12 md:px-10 md:py-16">
       <div className="container-x">
         <ParallaxSection speed={0.3} clamp={50}>
           <div className="mb-10 flex items-end justify-between gap-6">
@@ -167,13 +168,28 @@ export default function Skills() {
 
 function SkillCard({ group: g, index }) {
   const Icon = g.icon
+  const ref = useRef(null)
+
+  // Scroll-driven entrance — card scales/translates as it enters viewport
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start 0.95', 'start 0.45'],
+  })
+  const scale = useTransform(scrollYProgress, [0, 1], [0.85, 1])
+  const opacity = useTransform(scrollYProgress, [0, 1], [0, 1])
+  const y = useTransform(scrollYProgress, [0, 1], [60, 0])
+  // Slight rotation alternates per card index — playing-card feel
+  const rotate = useTransform(
+    scrollYProgress,
+    [0, 1],
+    [index % 2 === 0 ? -2.5 : 2.5, 0]
+  )
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
-      viewport={{ once: true, margin: '-50px' }}
-      className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.04] to-white/[0.01] p-5 backdrop-blur-md transition-all duration-500 hover:border-white/20 md:p-6 ${g.span}`}
+      ref={ref}
+      style={{ scale, opacity, y, rotate }}
+      className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.04] to-white/[0.01] p-5 backdrop-blur-md transition-[border-color,box-shadow] duration-500 hover:border-white/20 md:p-6 ${g.span}`}
     >
       {/* Hover glow that fills card from accent corner */}
       <div

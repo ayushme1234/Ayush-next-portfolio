@@ -36,7 +36,7 @@ const experience = [
 
 export default function Experience() {
   return (
-    <section className="relative px-6 py-20 md:px-10 md:py-24">
+    <section className="relative px-6 py-12 md:px-10 md:py-16">
       <div className="container-x">
         <ParallaxSection speed={0.3} clamp={50}>
           <div className="mb-10 flex items-end justify-between gap-6">

@@ -24,7 +24,7 @@ const services = [
 
 export default function Services() {
   return (
-    <section className="relative px-6 py-20 md:px-10 md:py-28">
+    <section className="relative px-6 py-12 md:px-10 md:py-16">
       <div className="container-x">
         <ParallaxSection speed={0.3} clamp={50}>
           <div className="mb-8 flex items-end justify-between gap-6">

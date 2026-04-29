@@ -35,7 +35,7 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="relative overflow-hidden px-6 py-20 md:px-10 md:py-24">
+    <section id="contact" className="relative overflow-hidden px-6 py-12 md:px-10 md:py-16">
       {/* Background glow */}
       <div
         className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 opacity-40"

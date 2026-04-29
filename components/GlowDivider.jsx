@@ -7,7 +7,7 @@ import { motion } from 'framer-motion'
  */
 export default function GlowDivider({ label }) {
   return (
-    <div className="relative flex items-center justify-center px-6 py-10 md:py-14">
+    <div className="relative flex items-center justify-center px-6 py-6 md:py-8">
       <div className="container-x flex w-full items-center gap-6">
         <div className="relative h-px flex-1 overflow-hidden bg-white/[0.06]">
           <motion.div
