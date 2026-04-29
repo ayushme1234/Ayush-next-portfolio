@@ -1,15 +1,5 @@
-// Order requested by user:
-// 1. Salesforce AI Assistant → 2. LWC Geek (interpreting "apex geek")
-// 3. Velocyte → 4. ES6 Geek → 5. Admin Geek → 6. Myntra × Salesforce
-// 7-9. QuickRide / EventHive / JS Geek
-
-// Primary: Thum.io
-const shot = (url, w = 1400, h = 900) =>
-  `https://image.thum.io/get/width/${w}/crop/${h}/${url}`
-
-// Fallback: WordPress mshots (kicks in only if Thum.io errors)
-export const fallbackShot = (url, w = 1400, h = 900) =>
-  `https://s.wordpress.com/mshots/v1/${encodeURIComponent(url)}?w=${w}&h=${h}`
+// All project hero screenshots are bundled locally — no external screenshot APIs.
+// Replace any image at /public/images/projects/<id>.png to update.
 
 export const projects = [
   {
@@ -35,11 +25,11 @@ export const projects = [
     subtitle: 'Interactive LWC Learning Platform',
     summary:
       '15 modules, a live LWC playground with iframe sandbox, multi-tab editor and an Apex code simulator with animated lifecycle diagrams.',
-    tags: ['React', 'Prism.js', 'iframe Sandbox', 'SVG'],
+    tags: ['React', 'Prism.js', 'iframe Sandbox'],
     year: '2025',
     role: 'Designer & Engineer',
     live: 'https://lwcgeek.vercel.app/',
-    image: shot('https://lwcgeek.vercel.app/'),
+    image: '/images/projects/lwc-geek.png',
     accent: '#ec4899',
   },
   {
@@ -53,8 +43,8 @@ export const projects = [
     year: '2024',
     role: 'Solo Build',
     live: 'https://velocyte.vercel.app/',
-    image: shot('https://velocyte.vercel.app/'),
-    accent: '#10b981',
+    image: '/images/projects/velocyte.png',
+    accent: '#22d3ee',
   },
   {
     id: 'es6-geek',
@@ -67,8 +57,8 @@ export const projects = [
     year: '2024',
     role: 'Solo Build',
     live: 'https://es6geek.vercel.app/',
-    image: shot('https://es6geek.vercel.app/'),
-    accent: '#eab308',
+    image: '/images/projects/es6-geek.png',
+    accent: '#10b981',
   },
   {
     id: 'admin-geek',
@@ -81,7 +71,7 @@ export const projects = [
     year: '2025',
     role: 'Solo Build',
     live: 'https://admin-geek.vercel.app/',
-    image: shot('https://admin-geek.vercel.app/'),
+    image: '/images/projects/admin-geek.png',
     accent: '#fb923c',
   },
   {
@@ -95,7 +85,7 @@ export const projects = [
     year: '2025',
     role: 'Full-stack',
     live: 'https://myntraxsalesforce.vercel.app/',
-    image: shot('https://myntraxsalesforce.vercel.app/'),
+    image: '/images/projects/myntra-sf.png',
     accent: '#f43f5e',
   },
   {
@@ -109,8 +99,8 @@ export const projects = [
     year: '2025',
     role: 'End-to-end',
     live: 'https://quickride-psi.vercel.app/',
-    image: shot('https://quickride-psi.vercel.app/'),
-    accent: '#22d3ee',
+    image: '/images/projects/quickride.png',
+    accent: '#a855f7',
   },
   {
     id: 'eventhive',
@@ -122,9 +112,8 @@ export const projects = [
     tags: ['LWC', 'Apex Triggers', 'Screen Flow', 'SFDX'],
     year: '2025',
     role: 'Architect',
-    image:
-      'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1400&q=80',
-    accent: '#a855f7',
+    image: '/images/projects/eventhive.png',
+    accent: '#f97316',
   },
   {
     id: 'js-geek',
@@ -137,7 +126,7 @@ export const projects = [
     year: '2024',
     role: 'Solo Build',
     live: 'https://js-geek.vercel.app/',
-    image: shot('https://js-geek.vercel.app/'),
+    image: '/images/projects/js-geek.png',
     accent: '#3b82f6',
   },
 ]
