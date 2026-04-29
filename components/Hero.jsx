@@ -1,7 +1,7 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
-import { ArrowRight, Sparkles, Play, Volume2, VolumeX } from 'lucide-react'
+import { ArrowRight, Sparkles, Play } from 'lucide-react'
 import { useUI } from '@/lib/store'
 import MagneticButton from './MagneticButton'
 import FloatingOrbs from './FloatingOrbs'
@@ -14,9 +14,6 @@ export default function Hero() {
 
   const heroRef = useRef(null)
   const layerRef = useRef(null)
-  const audioRef = useRef(null)
-
-  const [muted, setMuted] = useState(true)
 
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -55,15 +52,6 @@ export default function Hero() {
     return () => window.removeEventListener('mousemove', onMove)
   }, [mxRaw, myRaw])
 
-  // Optional video audio (kept available — plays only after user clicks unmute)
-  const toggleSound = () => {
-    if (!audioRef.current) return
-    const next = !muted
-    audioRef.current.muted = next
-    setMuted(next)
-    if (!next) audioRef.current.play().catch(() => {})
-  }
-
   return (
     <section
       ref={heroRef}
@@ -95,12 +83,18 @@ export default function Hero() {
       </motion.div>
 
       {/* ───── DIM OVERLAYS ───── */}
+      {/* Base dim — covers the whole image so text is readable everywhere */}
+      <div
+        className="pointer-events-none absolute inset-0 z-[1]"
+        style={{ background: 'rgba(5, 5, 7, 0.55)' }}
+        aria-hidden="true"
+      />
       {/* Soft top fade so the nav has contrast */}
       <div
         className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-48"
         style={{
           background:
-            'linear-gradient(180deg, rgba(5,5,7,0.85) 0%, rgba(5,5,7,0.4) 60%, transparent 100%)',
+            'linear-gradient(180deg, rgba(5,5,7,0.9) 0%, rgba(5,5,7,0.5) 60%, transparent 100%)',
         }}
         aria-hidden="true"
       />
@@ -109,7 +103,7 @@ export default function Hero() {
         className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-2/3"
         style={{
           background:
-            'linear-gradient(180deg, transparent 0%, rgba(5,5,7,0.5) 40%, rgba(5,5,7,0.92) 100%)',
+            'linear-gradient(180deg, transparent 0%, rgba(5,5,7,0.6) 40%, rgba(5,5,7,0.95) 100%)',
         }}
         aria-hidden="true"
       />
@@ -246,28 +240,6 @@ export default function Hero() {
 
       {/* Animated scroll indicator — centered bottom */}
       <ScrollCue />
-
-      {/* Hidden audio source (sound option) */}
-      <audio ref={audioRef} src="/videos/hero-bg.mp4" loop preload="none" muted />
-
-      {/* Sound toggle */}
-      <motion.button
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 2, duration: 0.6 }}
-        onClick={toggleSound}
-        aria-label={muted ? 'Unmute background audio' : 'Mute background audio'}
-        className="fixed bottom-6 left-6 z-30 flex items-center gap-2 rounded-full border border-white/15 bg-black/60 px-3 py-2 backdrop-blur-md transition-colors hover:border-white/30 hover:bg-black/80"
-      >
-        {muted ? (
-          <VolumeX size={14} className="text-white/80" />
-        ) : (
-          <Volume2 size={14} className="text-emerald-400" />
-        )}
-        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/90">
-          {muted ? 'Sound off' : 'Sound on'}
-        </span>
-      </motion.button>
     </section>
   )
 }
