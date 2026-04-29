@@ -11,9 +11,13 @@ export default function SmoothScroll() {
       const Lenis = (await import('lenis')).default
 
       lenis = new Lenis({
-        duration: 1.1,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        // lerp gives a more responsive feel than duration — closer to native
+        lerp: 0.12,
         smoothWheel: true,
+        // Disable on touch — iOS already has buttery native scroll
+        smoothTouch: false,
+        wheelMultiplier: 1,
+        touchMultiplier: 1.5,
       })
 
       const tick = (time) => {

@@ -3,7 +3,12 @@
 // 3. Velocyte → 4. ES6 Geek → 5. Admin Geek → 6. Myntra × Salesforce
 // 7-9. QuickRide / EventHive / JS Geek
 
+// Primary: WordPress mshots (more reliable, faster CDN, generous caching)
 const shot = (url, w = 1400, h = 900) =>
+  `https://s.wordpress.com/mshots/v1/${encodeURIComponent(url)}?w=${w}&h=${h}`
+
+// Fallback: Thum.io (kicks in if mshots returns an error or empty preview)
+export const fallbackShot = (url, w = 1400, h = 900) =>
   `https://image.thum.io/get/width/${w}/crop/${h}/${url}`
 
 export const projects = [

@@ -2,7 +2,7 @@
 import { useRef, useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { ArrowUpRight, Github, Image as ImageIcon } from 'lucide-react'
-import { projects } from '@/data/projects'
+import { projects, fallbackShot } from '@/data/projects'
 import SplitTextReveal from './SplitTextReveal'
 
 export default function ProjectsStack() {
@@ -38,6 +38,19 @@ function ProjectCard({ p, i, total }) {
   const ref = useRef(null)
   const [imgFailed, setImgFailed] = useState(false)
   const [imgLoaded, setImgLoaded] = useState(false)
+  const [imgSrc, setImgSrc] = useState(p.image)
+  const [retried, setRetried] = useState(false)
+
+  // On primary fail, try fallback service. On second fail, give up → placeholder.
+  const handleImgError = () => {
+    if (!retried && p.live && typeof p.image === 'string' && p.image.startsWith('http')) {
+      setImgSrc(fallbackShot(p.live))
+      setRetried(true)
+      setImgLoaded(false)
+    } else {
+      setImgFailed(true)
+    }
+  }
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -108,12 +121,12 @@ function ProjectCard({ p, i, total }) {
               {/* Real screenshot fades in on top when it loads */}
               {!imgFailed && (
                 <img
-                  src={p.image}
+                  src={imgSrc}
                   alt={`${p.title} preview`}
                   loading="lazy"
                   decoding="async"
                   onLoad={() => setImgLoaded(true)}
-                  onError={() => setImgFailed(true)}
+                  onError={handleImgError}
                   className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
                     imgLoaded ? 'opacity-100' : 'opacity-0'
                   }`}

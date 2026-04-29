@@ -25,10 +25,10 @@ export default function Hero() {
   const titleScale = useTransform(scrollYProgress, [0, 0.5], [1, 1.05])
   const titleOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
 
-  // Background image: slow zoom + dim as you scroll
+  // Background image: slow zoom + darkening overlay as you scroll (overlay = GPU; filter would be CPU)
   const bgScale = useTransform(scrollYProgress, [0, 1], [1.05, 1.18])
   const bgY = useTransform(scrollYProgress, [0, 1], [0, 80])
-  const bgBrightness = useTransform(scrollYProgress, [0, 1], [1, 0.4])
+  const darkOverlayOpacity = useTransform(scrollYProgress, [0, 1], [0, 0.6])
 
   const subY = useTransform(scrollYProgress, [0, 1], [0, -250])
 
@@ -39,14 +39,24 @@ export default function Hero() {
   const bgYMouse = useTransform(myRaw, [-1, 1], [15, -15])
 
   useEffect(() => {
+    let queued = false
+    let lastX = 0
+    let lastY = 0
     const onMove = (e) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 2
-      const y = (e.clientY / window.innerHeight - 0.5) * 2
-      mxRaw.set(x)
-      myRaw.set(y)
-      if (layerRef.current) {
-        layerRef.current.style.transform = `translate3d(${x * -8}px, ${y * -6}px, 0)`
-      }
+      lastX = e.clientX
+      lastY = e.clientY
+      if (queued) return
+      queued = true
+      requestAnimationFrame(() => {
+        const x = (lastX / window.innerWidth - 0.5) * 2
+        const y = (lastY / window.innerHeight - 0.5) * 2
+        mxRaw.set(x)
+        myRaw.set(y)
+        if (layerRef.current) {
+          layerRef.current.style.transform = `translate3d(${x * -8}px, ${y * -6}px, 0)`
+        }
+        queued = false
+      })
     }
     window.addEventListener('mousemove', onMove, { passive: true })
     return () => window.removeEventListener('mousemove', onMove)
@@ -64,7 +74,6 @@ export default function Hero() {
           scale: bgScale,
           y: bgY,
           x: bgX,
-          filter: useTransform(bgBrightness, (b) => `brightness(${b})`),
         }}
         className="absolute inset-0 z-0 will-change-transform"
         aria-hidden="true"
@@ -87,6 +96,12 @@ export default function Hero() {
       <div
         className="pointer-events-none absolute inset-0 z-[1]"
         style={{ background: 'rgba(5, 5, 7, 0.55)' }}
+        aria-hidden="true"
+      />
+      {/* Scroll-driven dark overlay — replaces the brightness filter (GPU only) */}
+      <motion.div
+        className="pointer-events-none absolute inset-0 z-[1] bg-black"
+        style={{ opacity: darkOverlayOpacity }}
         aria-hidden="true"
       />
       {/* Soft top fade so the nav has contrast */}
