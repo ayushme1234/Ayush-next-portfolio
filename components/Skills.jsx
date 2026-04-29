@@ -1,5 +1,5 @@
 'use client'
-import { useRef } from 'react'
+import { memo, useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import {
   Sparkles,
@@ -166,7 +166,7 @@ export default function Skills() {
   )
 }
 
-function SkillCard({ group: g, index }) {
+const SkillCard = memo(function SkillCard({ group: g, index }) {
   const Icon = g.icon
   const ref = useRef(null)
 
@@ -264,4 +264,4 @@ function SkillCard({ group: g, index }) {
       />
     </motion.div>
   )
-}
+})

@@ -1,5 +1,5 @@
 'use client'
-import { useRef } from 'react'
+import { memo, useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { Trophy, Code2, BookOpen, Award } from 'lucide-react'
 import SplitTextReveal from './SplitTextReveal'
@@ -67,7 +67,7 @@ export default function Recognition() {
   )
 }
 
-function RecognitionCard({ it, i }) {
+const RecognitionCard = memo(function RecognitionCard({ it, i }) {
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -125,4 +125,4 @@ function RecognitionCard({ it, i }) {
       />
     </motion.div>
   )
-}
+})

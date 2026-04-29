@@ -1,5 +1,5 @@
 'use client'
-import { useRef, useState } from 'react'
+import { memo, useRef, useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { ArrowUpRight, Github, Image as ImageIcon } from 'lucide-react'
 import { projects, fallbackShot } from '@/data/projects'
@@ -34,7 +34,7 @@ export default function ProjectsStack() {
   )
 }
 
-function ProjectCard({ p, i, total }) {
+const ProjectCard = memo(function ProjectCard({ p, i, total }) {
   const ref = useRef(null)
   const [imgFailed, setImgFailed] = useState(false)
   const [imgLoaded, setImgLoaded] = useState(false)
@@ -211,4 +211,4 @@ function ProjectCard({ p, i, total }) {
       </div>
     </div>
   )
-}
+})

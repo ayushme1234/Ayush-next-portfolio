@@ -267,3 +267,39 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* ─── PERFORMANCE — CSS containment + GPU layer hints ───────── */
+/* Each top-level section repaints in isolation; eliminates cross-page paint cascades on scroll. */
+main > section,
+main > div {
+  contain: layout paint style;
+}
+
+/* Continually-animated elements get their own GPU compositor layer */
+.aurora-blob,
+.marquee-track {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.scroll-progress {
+  will-change: width;
+}
+
+/* Glassmorphism is GPU-expensive on scroll. Stabilize the layer + prevent
+   backdrop-blur tearing/flicker during scroll-driven opacity changes. */
+[class*="backdrop-blur"] {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Hero background image — stable GPU layer (it's the largest element on the page) */
+img[src*="hero-bg"] {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+

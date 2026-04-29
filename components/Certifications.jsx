@@ -1,5 +1,5 @@
 'use client'
-import { useRef } from 'react'
+import { memo, useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { Award, ExternalLink, Brain, Layers, Code2, Cloud } from 'lucide-react'
 import SplitTextReveal from './SplitTextReveal'
@@ -73,7 +73,7 @@ export default function Certifications() {
   )
 }
 
-function CertCard({ c, i }) {
+const CertCard = memo(function CertCard({ c, i }) {
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -151,4 +151,4 @@ function CertCard({ c, i }) {
       />
     </motion.div>
   )
-}
+})
