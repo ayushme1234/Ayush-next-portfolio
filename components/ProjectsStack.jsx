@@ -69,21 +69,43 @@ function ProjectCard({ p, i, total }) {
           viewport={{ once: true, margin: '-15%' }}
         >
           <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr]">
-            {/* Image with fallback */}
+            {/* Image with always-visible designed background */}
             <div
               className="relative aspect-[16/10] overflow-hidden md:aspect-auto"
               style={{
-                background: imgFailed
-                  ? `linear-gradient(135deg, ${accent}30 0%, ${accent}10 50%, #0d0d10 100%)`
-                  : '#15151a',
+                background: `linear-gradient(135deg, ${accent}30 0%, ${accent}0d 50%, #0d0d10 100%)`,
               }}
             >
-              {/* Skeleton — shown while loading */}
-              {!imgLoaded && !imgFailed && (
-                <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-white/[0.04] to-white/[0.01]" />
-              )}
+              {/* Always-visible designed placeholder — sits behind the image */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
+                {/* Subtle dot grid pattern */}
+                <div
+                  className="absolute inset-0 opacity-30"
+                  style={{
+                    backgroundImage: `radial-gradient(${accent}55 1px, transparent 1px)`,
+                    backgroundSize: '22px 22px',
+                  }}
+                />
+                <div className="relative">
+                  <div
+                    className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl"
+                    style={{
+                      background: `${accent}25`,
+                      border: `1px solid ${accent}55`,
+                    }}
+                  >
+                    <ImageIcon size={20} style={{ color: accent }} />
+                  </div>
+                  <div className="font-display text-[clamp(1.1rem,2.4vw,1.6rem)] font-semibold leading-tight tracking-tight text-ink-100">
+                    {p.title}
+                  </div>
+                  <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.25em] text-ink-500 md:text-[10px]">
+                    {p.subtitle}
+                  </div>
+                </div>
+              </div>
 
-              {/* Real image */}
+              {/* Real screenshot fades in on top when it loads */}
               {!imgFailed && (
                 <img
                   src={p.image}
@@ -92,42 +114,10 @@ function ProjectCard({ p, i, total }) {
                   decoding="async"
                   onLoad={() => setImgLoaded(true)}
                   onError={() => setImgFailed(true)}
-                  className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
+                  className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
                     imgLoaded ? 'opacity-100' : 'opacity-0'
                   }`}
                 />
-              )}
-
-              {/* Fallback placeholder when image fails */}
-              {imgFailed && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
-                  <div
-                    className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl"
-                    style={{
-                      background: `${accent}25`,
-                      border: `1px solid ${accent}50`,
-                    }}
-                  >
-                    <ImageIcon size={22} style={{ color: accent }} />
-                  </div>
-                  <div className="font-display text-[20px] font-semibold tracking-tight text-ink-100 md:text-[24px]">
-                    {p.title}
-                  </div>
-                  <div className="mt-1 font-mono text-[10px] uppercase tracking-wider text-ink-500">
-                    {p.subtitle}
-                  </div>
-                  {p.live && (
-                    <a
-                      href={p.live}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-4 flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] text-ink-200 transition-colors hover:bg-white/10"
-                    >
-                      View live
-                      <ArrowUpRight size={11} />
-                    </a>
-                  )}
-                </div>
               )}
 
               <span className="absolute left-5 top-5 z-10 rounded-full bg-black/60 px-3 py-1 font-mono text-[10px] uppercase tracking-wide text-ink-200 backdrop-blur-md">
