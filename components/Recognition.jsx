@@ -10,74 +10,76 @@ const items = [
     icon: Code2,
     counter: 200,
     suffix: '+',
-    title: 'DSA problems solved',
-    desc: 'Across LeetCode, HackerRank, GeeksforGeeks. Daily algorithmic grind.',
+    title: 'DSA problems',
+    desc: 'Across LeetCode, HackerRank, GeeksforGeeks.',
     glow: '#a78bfa',
   },
   {
     icon: Trophy,
     big: 'SIH',
-    title: 'Smart India Hackathon',
-    desc: 'Internal college round qualifier. Team-led problem-solving on national-scale challenges.',
+    title: 'Hackathon qualifier',
+    desc: 'Internal college round qualifier.',
     glow: '#ec4899',
   },
   {
     icon: BookOpen,
     big: 'Top 5',
-    title: 'Through school career',
-    desc: 'Consistent academic top-five rank from class 5 through 12.',
+    title: 'School career',
+    desc: 'Top-five rank from class 5 through 12.',
     glow: '#22d3ee',
   },
   {
     icon: Award,
     counter: 9,
     suffix: '+',
-    title: 'Live products shipped',
-    desc: 'From agentic RAG systems to Salesforce platforms — all deployed and reachable.',
+    title: 'Live products',
+    desc: 'Agentic RAG to Salesforce platforms.',
     glow: '#fb923c',
   },
 ]
 
 export default function Recognition() {
   return (
-    <section className="relative px-6 py-24 md:px-10 md:py-32">
+    <section className="relative px-6 py-20 md:px-10 md:py-24">
       <div className="container-x">
-        <ParallaxSection speed={0.3} clamp={60}>
-          <div className="mb-12 max-w-3xl">
-            <p className="eyebrow !mb-2">Recognition</p>
-            <h2 className="font-display text-[clamp(1.75rem,4.5vw,3rem)] font-semibold leading-[1.05] tracking-tighter-2 text-ink-50">
-              <SplitTextReveal stagger={0.05}>What I'm proud of.</SplitTextReveal>
-            </h2>
+        <ParallaxSection speed={0.3} clamp={50}>
+          <div className="mb-8 flex items-end justify-between gap-6">
+            <div>
+              <p className="eyebrow !mb-2">Recognition</p>
+              <h2 className="font-display text-[clamp(1.5rem,3.5vw,2.5rem)] font-semibold leading-[1.1] tracking-tighter-2 text-ink-50">
+                <SplitTextReveal stagger={0.05}>What I'm proud of.</SplitTextReveal>
+              </h2>
+            </div>
+            <span className="hidden font-mono text-[10px] uppercase tracking-[0.3em] text-ink-500 md:block">
+              04 · Highlights
+            </span>
           </div>
         </ParallaxSection>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
           {items.map((it, i) => (
             <motion.div
               key={it.title}
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: i * 0.07, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.6, delay: i * 0.07, ease: [0.16, 1, 0.3, 1] }}
               viewport={{ once: true, margin: '-50px' }}
-              className="group relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.04] to-white/[0.01] p-7 backdrop-blur-md transition-all duration-500 hover:border-white/20 md:p-9"
+              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.04] to-white/[0.01] p-4 backdrop-blur-md transition-all duration-500 hover:border-white/20 md:p-5"
             >
-              {/* Hover glow that follows the card's accent color */}
+              {/* Hover glow */}
               <div
-                className="pointer-events-none absolute -right-20 -top-20 h-60 w-60 rounded-full opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                 style={{
                   background: `radial-gradient(circle, ${it.glow}40 0%, transparent 70%)`,
-                  filter: 'blur(40px)',
+                  filter: 'blur(25px)',
                 }}
               />
 
               {/* Icon */}
               <div
-                className="relative mb-6 flex h-11 w-11 items-center justify-center rounded-full bg-white/[0.06] text-ink-300 transition-all duration-500"
-                style={{
-                  boxShadow: '0 0 0 1px rgba(255,255,255,0.05)',
-                }}
+                className="relative mb-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/[0.06] text-ink-300 transition-all duration-500"
               >
-                <it.icon size={18} className="relative z-10" />
+                <it.icon size={14} className="relative z-10" />
                 <div
                   className="absolute inset-0 rounded-full opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                   style={{
@@ -87,19 +89,19 @@ export default function Recognition() {
               </div>
 
               {/* Big number / label */}
-              <div className="relative font-display text-[clamp(2.5rem,6vw,4rem)] font-bold leading-none tracking-tighter-2 text-ink-50">
+              <div className="relative font-display text-[clamp(1.5rem,3.5vw,2.25rem)] font-bold leading-none tracking-tighter-2 text-ink-50">
                 {it.counter !== undefined ? (
-                  <AnimatedCounter value={it.counter} suffix={it.suffix || ''} duration={1.6} />
+                  <AnimatedCounter value={it.counter} suffix={it.suffix || ''} duration={1.4} />
                 ) : (
                   it.big
                 )}
               </div>
 
               {/* Subtitle */}
-              <h3 className="relative mt-3 font-display text-[16px] font-medium tracking-tight text-ink-100 md:text-[18px]">
+              <h3 className="relative mt-2 font-display text-[13px] font-medium tracking-tight text-ink-100 md:text-[14px]">
                 {it.title}
               </h3>
-              <p className="relative mt-2 max-w-md text-[13px] leading-relaxed text-ink-400 md:text-[14px]">
+              <p className="relative mt-1 text-[11px] leading-relaxed text-ink-400 md:text-[12px]">
                 {it.desc}
               </p>
 

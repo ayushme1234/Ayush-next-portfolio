@@ -19,7 +19,7 @@ export const projects = [
     role: 'Architect',
     live: 'https://salesforce-ai-assistance.vercel.app/',
     repo: 'https://github.com/ayushme1234/Salesforce_AI',
-    image: shot('https://salesforce-ai-assistance.vercel.app/'),
+    image: '/images/projects/salesforce-ai.png',
     accent: '#a78bfa',
     featured: true,
   },

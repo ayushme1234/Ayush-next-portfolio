@@ -28,7 +28,7 @@ const groups = [
 
 export default function Skills() {
   return (
-    <section className="relative px-6 py-24 md:px-10 md:py-32">
+    <section className="relative px-6 py-20 md:px-10 md:py-20">
       <div className="container-x">
         <ParallaxSection speed={0.3} clamp={60}>
           <div className="mb-10 flex items-end justify-between gap-6 md:mb-14">

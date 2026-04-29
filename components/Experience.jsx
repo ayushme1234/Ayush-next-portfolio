@@ -52,7 +52,7 @@ export default function Experience() {
   return (
     <section
       ref={sectionRef}
-      className="relative px-6 py-24 md:px-10 md:py-32"
+      className="relative px-6 py-20 md:px-10 md:py-20"
     >
       <div className="container-x">
         <ParallaxSection speed={0.3} clamp={50}>
