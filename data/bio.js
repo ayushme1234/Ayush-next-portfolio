@@ -6,6 +6,14 @@ export const bio = {
   email: 'ayushme1234@gmail.com',
   phone: '+91 7070015321',
   location: 'Kolkata, India',
+
+  // → CHANGE THIS to your GitHub repo URL after pushing the code
+  portfolioRepo: 'https://github.com/ayushme1234/portfolio-v2',
+
+  // → Resume: drop your PDF at /public/resume.pdf and the button will work
+  // (or change this to a Google Drive / Dropbox / external link)
+  resumeUrl: '/resume.pdf',
+
   socials: {
     github: 'https://github.com/ayushme1234',
     linkedin: 'https://www.linkedin.com/in/ayush-8b9623223/',

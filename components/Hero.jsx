@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useRef } from 'react'
-import { motion } from 'framer-motion'
-import { ArrowRight, Sparkles, Play, Volume2, MessageSquare } from 'lucide-react'
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
+import { ArrowRight, Sparkles, Play, MessageSquare } from 'lucide-react'
 import { useUI } from '@/lib/store'
 import MagneticButton from './MagneticButton'
 import SplitTextReveal from './SplitTextReveal'
@@ -20,7 +20,6 @@ export default function Hero() {
   const setChatOpen = useUI((s) => s.setChatOpen)
   const setVoiceOpen = useUI((s) => s.setVoiceOpen)
 
-  // Mouse parallax — refs for layers at different depths
   const heroRef = useRef(null)
   const layerNameRef = useRef(null)
   const layerSubRef = useRef(null)
@@ -28,11 +27,31 @@ export default function Hero() {
   const layerSceneRef = useRef(null)
   const layerBlobRef = useRef(null)
 
+  // Scroll-driven transforms
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start'],
+  })
+  const nameScale = useTransform(scrollYProgress, [0, 0.5], [1, 1.15])
+  const nameY = useTransform(scrollYProgress, [0, 1], [0, -150])
+  const nameOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0])
+  const subY = useTransform(scrollYProgress, [0, 1], [0, -250])
+  const sceneY = useTransform(scrollYProgress, [0, 1], [0, -350])
+  const sceneScale = useTransform(scrollYProgress, [0, 0.6], [1, 1.2])
+  const blobScale = useTransform(scrollYProgress, [0, 1], [1, 1.4])
+  const blobOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0.3])
+
+  // Spring-smoothed mouse parallax
+  const mx = useSpring(0, { damping: 30, stiffness: 100 })
+  const my = useSpring(0, { damping: 30, stiffness: 100 })
+
   useEffect(() => {
     const onMove = (e) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 2 // -1..1
+      const x = (e.clientX / window.innerWidth - 0.5) * 2
       const y = (e.clientY / window.innerHeight - 0.5) * 2
-      // Each layer parallaxes at a different depth
+      mx.set(x)
+      my.set(y)
+
       if (layerNameRef.current) {
         layerNameRef.current.style.transform = `translate3d(${x * -8}px, ${y * -6}px, 0)`
       }
@@ -51,7 +70,7 @@ export default function Hero() {
     }
     window.addEventListener('mousemove', onMove)
     return () => window.removeEventListener('mousemove', onMove)
-  }, [])
+  }, [mx, my])
 
   return (
     <section
@@ -59,16 +78,21 @@ export default function Hero() {
       id="top"
       className="relative flex min-h-[100svh] w-full flex-col items-center justify-center overflow-hidden px-6 pt-24 pb-16"
     >
-      {/* Hero-local moving blob (extra parallax over the global aurora) */}
-      <div
-        ref={layerBlobRef}
-        className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 will-change-transform"
-        style={{
-          background:
-            'radial-gradient(circle, rgba(167,139,250,0.20) 0%, transparent 60%)',
-          filter: 'blur(40px)',
-        }}
-      />
+      {/* Hero-local blob — scales & fades on scroll */}
+      <motion.div
+        style={{ scale: blobScale, opacity: blobOpacity }}
+        className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2"
+      >
+        <div
+          ref={layerBlobRef}
+          className="h-full w-full will-change-transform"
+          style={{
+            background:
+              'radial-gradient(circle, rgba(167,139,250,0.20) 0%, transparent 60%)',
+            filter: 'blur(40px)',
+          }}
+        />
+      </motion.div>
 
       {/* Status pill */}
       <div ref={layerEyebrowRef} className="will-change-transform">
@@ -88,43 +112,50 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      {/* Main display */}
-      <div ref={layerNameRef} className="relative z-10 will-change-transform">
-        <h1 className="font-display text-center font-semibold leading-[0.92] tracking-tightest">
-          <span className="block text-[clamp(0.875rem,1.4vw,1rem)] font-medium uppercase tracking-[0.3em] text-ink-400 mb-5">
-            <SplitTextReveal stagger={0.04} delay={0.05}>
-              Hi, I'm
-            </SplitTextReveal>
-          </span>
-          <span
-            className="gradient-text block text-[clamp(4.5rem,17vw,13rem)] font-bold"
-            style={{ fontWeight: 800 }}
-          >
-            <SplitTextReveal stagger={0.05} delay={0.15} type="char">
-              Ayush.
-            </SplitTextReveal>
-          </span>
-        </h1>
-      </div>
+      {/* Main display — scroll-scales + fades */}
+      <motion.div
+        style={{ scale: nameScale, y: nameY, opacity: nameOpacity }}
+        className="relative z-10"
+      >
+        <div ref={layerNameRef} className="will-change-transform">
+          <h1 className="font-display text-center font-semibold leading-[0.92] tracking-tightest">
+            <span className="block text-[clamp(0.875rem,1.4vw,1rem)] font-medium uppercase tracking-[0.3em] text-ink-400 mb-5">
+              <SplitTextReveal stagger={0.04} delay={0.05}>
+                Hi, I'm
+              </SplitTextReveal>
+            </span>
+            <span
+              className="gradient-text block text-[clamp(4.5rem,17vw,13rem)] font-bold"
+              style={{ fontWeight: 800 }}
+            >
+              <SplitTextReveal stagger={0.05} delay={0.15} type="char">
+                Ayush.
+              </SplitTextReveal>
+            </span>
+          </h1>
+        </div>
+      </motion.div>
 
-      {/* Role + tagline */}
-      <div ref={layerSubRef} className="relative z-10 mt-6 will-change-transform">
-        <p className="text-center text-[clamp(1.25rem,3vw,2rem)] font-medium leading-tight tracking-tight text-ink-100">
-          <SplitTextReveal stagger={0.05} delay={0.55}>
-            Full-Stack AI Engineer
-          </SplitTextReveal>
-        </p>
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.85, ease: [0.16, 1, 0.3, 1] }}
-          className="mx-auto mt-4 max-w-xl text-center text-[15px] leading-relaxed text-ink-400 md:text-[17px]"
-        >
-          I build agentic RAG systems, polished React frontends, and Salesforce
-          platforms that ship. B.Tech ECE 2026, currently at{' '}
-          <span className="text-ink-100">Cognizant</span>.
-        </motion.p>
-      </div>
+      {/* Role + tagline — scroll-shifts faster */}
+      <motion.div style={{ y: subY }} className="relative z-10 mt-6">
+        <div ref={layerSubRef} className="will-change-transform">
+          <p className="text-center text-[clamp(1.25rem,3vw,2rem)] font-medium leading-tight tracking-tight text-ink-100">
+            <SplitTextReveal stagger={0.05} delay={0.55}>
+              Full-Stack AI Engineer
+            </SplitTextReveal>
+          </p>
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.85, ease: [0.16, 1, 0.3, 1] }}
+            className="mx-auto mt-4 max-w-xl text-center text-[15px] leading-relaxed text-ink-400 md:text-[17px]"
+          >
+            I build agentic RAG systems, polished React frontends, and Salesforce
+            platforms that ship. B.Tech ECE 2026, currently at{' '}
+            <span className="text-ink-100">Cognizant</span>.
+          </motion.p>
+        </div>
+      </motion.div>
 
       {/* CTAs */}
       <motion.div
@@ -185,20 +216,22 @@ export default function Hero() {
         </MagneticButton>
       </motion.div>
 
-      {/* 3D Character */}
-      <div
-        ref={layerSceneRef}
-        className="relative z-10 mt-12 h-[320px] w-full max-w-[460px] will-change-transform md:h-[380px] md:max-w-[520px]"
+      {/* 3D Character — scroll-drifts up + scales */}
+      <motion.div
+        style={{ y: sceneY, scale: sceneScale }}
+        className="relative z-10 mt-12 h-[320px] w-full max-w-[460px] md:h-[380px] md:max-w-[520px]"
       >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.4, delay: 1.3, ease: [0.16, 1, 0.3, 1] }}
-          className="h-full w-full"
-        >
-          <HeroCharacter />
-        </motion.div>
-      </div>
+        <div ref={layerSceneRef} className="h-full w-full will-change-transform">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.4, delay: 1.3, ease: [0.16, 1, 0.3, 1] }}
+            className="h-full w-full"
+          >
+            <HeroCharacter />
+          </motion.div>
+        </div>
+      </motion.div>
 
       {/* Tech ribbon */}
       <motion.div

@@ -2,7 +2,7 @@
 import { motion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 import SplitTextReveal from './SplitTextReveal'
-import { useUI } from '@/lib/store'
+import ParallaxSection from './ParallaxSection'
 
 const services = [
   {
@@ -27,12 +27,14 @@ export default function Services() {
   return (
     <section className="section relative">
       <div className="container-x">
-        <div className="mb-14 max-w-3xl">
-          <p className="eyebrow">Services</p>
-          <h2 className="font-display text-[clamp(2rem,5.5vw,4.5rem)] font-semibold leading-[1.05] tracking-tighter-2 text-ink-50">
-            <SplitTextReveal stagger={0.06}>What I do best.</SplitTextReveal>
-          </h2>
-        </div>
+        <ParallaxSection speed={0.4} clamp={80}>
+          <div className="mb-10 max-w-3xl">
+            <p className="eyebrow">Services</p>
+            <h2 className="font-display text-[clamp(1.5rem,3.5vw,2.75rem)] font-semibold leading-[1.05] tracking-tighter-2 text-ink-50">
+              <SplitTextReveal stagger={0.06}>What I do best.</SplitTextReveal>
+            </h2>
+          </div>
+        </ParallaxSection>
 
         <ul className="border-t border-white/10">
           {services.map((s, i) => (

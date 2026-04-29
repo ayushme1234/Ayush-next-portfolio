@@ -13,8 +13,8 @@ const items = [
 
 export default function Marquee() {
   return (
-    <section className="relative overflow-hidden border-y border-white/[0.06] py-10">
-      <div className="marquee-track text-[clamp(2rem,5vw,3.5rem)] font-display font-semibold tracking-tighter-2 text-ink-100">
+    <section className="relative overflow-hidden border-y border-white/[0.06] py-7">
+      <div className="marquee-track text-[clamp(1.25rem,3.5vw,2.5rem)] font-display font-semibold tracking-tighter-2 text-ink-100">
         {[...items, ...items, ...items].map((item, i) => (
           <span key={i} className="inline-flex items-center gap-12">
             {i % 4 === 0 ? <span className="gradient-text">{item}</span> : item}

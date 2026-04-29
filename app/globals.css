@@ -36,10 +36,10 @@ body {
 ::selection { background: rgba(167, 139, 250, 0.45); color: #fff; }
 ::-webkit-scrollbar { width: 0; height: 0; }
 
-/* Section base */
-.section { padding: 7rem 1.5rem; }
-@media (min-width: 768px) { .section { padding: 10rem 2.5rem; } }
-@media (min-width: 1024px) { .section { padding: 12rem 3rem; } }
+/* Section base — tighter so sections don't bleed past the viewport */
+.section { padding: 4rem 1.5rem; }
+@media (min-width: 768px) { .section { padding: 5rem 2.5rem; } }
+@media (min-width: 1024px) { .section { padding: 6rem 3rem; } }
 
 .container-x {
   max-width: var(--max-content);
@@ -148,6 +148,36 @@ body {
   animation: gradientShift 8s ease-in-out infinite;
 }
 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 50px -10px rgba(236, 72, 153, 0.6); }
+
+/* Hero "Ask AI" — bigger, glowing, attention-grabbing */
+.btn-hero-ai {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.125rem 2.25rem;
+  border-radius: 980px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  background: linear-gradient(135deg, #a78bfa 0%, #ec4899 50%, #fb923c 100%);
+  background-size: 200% 200%;
+  color: #050507;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.6), 0 12px 50px -10px rgba(167, 139, 250, 0.6);
+  animation: gradientShift 6s ease-in-out infinite, heroAiPulse 2.4s ease-in-out infinite;
+}
+.btn-hero-ai:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 0 8px rgba(236, 72, 153, 0.15), 0 20px 60px -10px rgba(236, 72, 153, 0.7);
+}
+@keyframes heroAiPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.6), 0 12px 50px -10px rgba(167, 139, 250, 0.5); }
+  50% { box-shadow: 0 0 0 12px rgba(236, 72, 153, 0), 0 12px 50px -10px rgba(167, 139, 250, 0.7); }
+}
 
 .btn-ghost {
   display: inline-flex;

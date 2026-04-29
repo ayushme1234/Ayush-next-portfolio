@@ -28,7 +28,7 @@ export default function Contact() {
     <section id="contact" className="section relative">
       <div className="container-x text-center">
         <p className="eyebrow">Let's talk</p>
-        <h2 className="font-display text-[clamp(2.5rem,8vw,6rem)] font-semibold leading-[1.0] tracking-tightest text-ink-50">
+        <h2 className="font-display text-[clamp(1.75rem,4.5vw,3.5rem)] font-semibold leading-[1.05] tracking-tightest text-ink-50">
           <SplitTextReveal stagger={0.05}>Let's build something</SplitTextReveal>
           <br />
           <span className="gradient-text">
