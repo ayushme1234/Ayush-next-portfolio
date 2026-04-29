@@ -4,13 +4,11 @@ import { useEffect } from 'react'
 export default function SmoothScroll() {
   useEffect(() => {
     let lenis
+    let raf
     let cleanup = () => {}
 
     ;(async () => {
       const Lenis = (await import('lenis')).default
-      const { gsap } = await import('gsap')
-      const { ScrollTrigger } = await import('gsap/ScrollTrigger')
-      gsap.registerPlugin(ScrollTrigger)
 
       lenis = new Lenis({
         duration: 1.1,
@@ -18,14 +16,14 @@ export default function SmoothScroll() {
         smoothWheel: true,
       })
 
-      // Sync Lenis with ScrollTrigger so pinned sections work
-      lenis.on('scroll', ScrollTrigger.update)
-      gsap.ticker.add((time) => {
-        lenis.raf(time * 1000)
-      })
-      gsap.ticker.lagSmoothing(0)
+      const tick = (time) => {
+        lenis.raf(time)
+        raf = requestAnimationFrame(tick)
+      }
+      raf = requestAnimationFrame(tick)
 
       cleanup = () => {
+        cancelAnimationFrame(raf)
         lenis?.destroy()
       }
     })()

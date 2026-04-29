@@ -1,8 +1,12 @@
 import Navbar from '@/components/Navbar'
 import Hero from '@/components/Hero'
 import Marquee from '@/components/Marquee'
+import Now from '@/components/Now'
 import Services from '@/components/Services'
-import ProjectsScroll from '@/components/ProjectsScroll'
+import Skills from '@/components/Skills'
+import ProjectsStack from '@/components/ProjectsStack'
+import Experience from '@/components/Experience'
+import Recognition from '@/components/Recognition'
 import About from '@/components/About'
 import Contact from '@/components/Contact'
 import Footer from '@/components/Footer'
@@ -22,8 +26,12 @@ export default function Home() {
       <main>
         <Hero />
         <Marquee />
+        <Now />
         <Services />
-        <ProjectsScroll />
+        <Skills />
+        <ProjectsStack />
+        <Experience />
+        <Recognition />
         <About />
         <Contact />
       </main>
